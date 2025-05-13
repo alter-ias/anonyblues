@@ -6,19 +6,96 @@
     <title>ALGO-RITMO | ANONYBLUES</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap">
     <style>
-        /* --- Estilos (sin cambios) --- */
-        body { margin: 0; overflow: hidden; font-family: 'Orbitron', sans-serif; background: #000; cursor: default; }
-        #intro-video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; background-color: #000; transition: opacity 1s ease-out; display: flex; justify-content: center; align-items: center; }
+        html, body { height: 100%; margin: 0; overflow: hidden; }
+        body { font-family: 'Orbitron', sans-serif; background: #000; color: #fff; /* Color base texto */ cursor: default; position: relative; }
+
+        /* --- Contenedor para centrar el botón y texto inicial --- */
+        #start-button-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex; /* Usar flexbox */
+            justify-content: center; /* Centrar horizontalmente */
+            align-items: center; /* Centrar verticalmente */
+            flex-direction: column; /* Apilar elementos verticalmente */
+            z-index: 400;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+            background-color: #000;
+            text-align: center; /* Centrar texto dentro del contenedor */
+        }
+        #start-button-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- Texto Inicial --- */
+        .start-title {
+            font-size: 2.5rem; /* Tamaño más grande para el título */
+            color: #0FF;
+            text-shadow: 0 0 15px #0FF, 0 0 5px #0FF;
+            margin-bottom: 15px; /* Espacio antes del botón */
+             letter-spacing: 2px;
+        }
+        .start-subtitle {
+            font-size: 1.1rem;
+            color: #eee; /* Un blanco ligeramente más tenue */
+            text-shadow: 0 0 5px #ccc;
+            margin-top: 15px; /* Espacio después del botón */
+            font-weight: 400; /* Peso normal */
+        }
+
+        /* --- Botón de Inicio --- */
+        #start-button {
+            padding: 15px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #0FF;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #0FF;
+            border-radius: 8px;
+            cursor: pointer;
+            text-shadow: 0 0 10px #0FF;
+            transition: background-color 0.3s, color 0.3s, transform 0.3s ease;
+            transform: scale(1);
+            margin-top: 10px; /* Espacio opcional si se ve muy pegado */
+            margin-bottom: 10px;
+        }
+        #start-button:hover {
+            background-color: rgba(0, 255, 255, 0.2);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* --- Contenedor Intro --- */
+        #intro-video-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 300;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in;
+        }
+        #intro-video-container.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         #intro-video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- Canvas y UI --- */
         #canvas-container, #ui { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-out; }
         #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        #ui { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); color: #0FF; text-align: center; text-shadow: 0 0 10px #0FF; z-index: 100; width: 90%; max-width: 800px; pointer-events: none; }
-        #ui .social-links a { pointer-events: auto; }
+        #ui { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); color: #0FF; text-align: center; text-shadow: 0 0 10px #0FF; z-index: 100; width: 90%; max-width: 800px; /* pointer-events: none; se activa en JS */ }
+        #ui .social-links a { pointer-events: auto; } /* Asegurar que los links sean clickeables */
         .main-title { margin-bottom: 5px; font-size: 1.2rem; }
         .song-title { font-size: 1.5rem; margin-bottom: 10px; opacity: 0; transition: opacity 0.5s; height: 1.8em; }
-        .social-links { margin-top: 5px; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .social-links a { color: #FF00FF; text-decoration: none; font-size: 0.8rem; transition: opacity 0.3s, text-shadow 0.3s; text-shadow: 0 0 8px #FF00FF; }
+        /* --- Estilos para Social Links (restaurados) --- */
+        .social-links { margin-top: 15px; /* Más espacio */ display: flex; justify-content: center; align-items: center; gap: 20px; /* Más separación */ flex-wrap: wrap; }
+        .social-links a { color: #FF00FF; text-decoration: none; font-size: 0.9rem; /* Ligeramente más grande */ transition: opacity 0.3s, text-shadow 0.3s; text-shadow: 0 0 8px #FF00FF; }
         .social-links a:hover { opacity: 0.8; text-shadow: 0 0 15px #FF00FF; }
+        /* --- Fin Estilos Social Links --- */
         #video-container { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 70vw; height: 39.375vw; max-width: 900px; max-height: 506px; z-index: 200; display: none; border: 3px solid #0FF; box-shadow: 0 0 30px #0FF; background: black; opacity: 0; transition: opacity 0.5s ease-out; }
         #close-video { position: absolute; top: -20px; right: -20px; background: #FF00FF; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 201; line-height: 40px; text-align: center; }
         body.app-active { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="%23FF00FF" stroke-width="3"/></svg>'), auto; }
@@ -32,17 +109,36 @@
     </script>
 </head>
 <body>
-    <!-- Audio de fondo (quitamos autoplay) -->
+    <!-- Contenedor para centrar el botón y texto inicial -->
+    <div id="start-button-container">
+        <h1 class="start-title">ALGO-RITMO</h1>
+        <button id="start-button">Inicia Aquí</button>
+        <p class="start-subtitle">Un álbum interactivo de AnonyBlues</p> 
+    </div>
+
+    <!-- Audio de fondo (sin autoplay) -->
     <audio id="background-music" loop>
         <source src="./assets/sounds/sonido.mp3" type="audio/mp3">
         Tu navegador no soporta la reproducción de audio.
     </audio>
 
-    <!-- Intro Video (con autoplay muted) -->
-    <div id="intro-video-container"><video id="intro-video" src="./assets/videos/fondo.mp4" autoplay playsinline muted></video></div>
+    <!-- Intro Video (sin autoplay, muted) -->
+    <div id="intro-video-container"><video id="intro-video" src="./assets/videos/fondo.mp4" playsinline muted></video></div>
+
     <!-- Contenido Principal -->
     <div id="canvas-container"></div>
-    <div id="ui"><div class="song-title" id="song-title"></div><div class="main-title">ALGO-RITMO | ANONYBLUES</div><div class="social-links"><a href="INSTAGRAM_URL" target="_blank" rel="noopener noreferrer">Instagram</a> <a href="YOUTUBE_URL" target="_blank" rel="noopener noreferrer">YouTube</a> <a href="FACEBOOK_URL" target="_blank" rel="noopener noreferrer">Facebook</a> <a href="PATREON_URL" target="_blank" rel="noopener noreferrer">Patreon</a></div></div>
+    <div id="ui">
+        <div class="song-title" id="song-title"></div>
+        <div class="main-title">ALGO-RITMO | ANONYBLUES</div>
+         
+        <div class="social-links">
+            <a href="INSTAGRAM_URL" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="YOUTUBE_URL" target="_blank" rel="noopener noreferrer">YouTube</a>
+            <a href="FACEBOOK_URL" target="_blank" rel="noopener noreferrer">Facebook</a>
+            <a href="PATREON_URL" target="_blank" rel="noopener noreferrer">Patreon</a>
+        </div>
+         
+    </div>
     <div id="video-container"><iframe id="yt-player" width="100%" height="100%" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><button id="close-video">×</button></div>
 
     <script type="module">
@@ -53,6 +149,8 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
         // --- Elementos DOM ---
+        const startButtonContainer = document.getElementById('start-button-container');
+        const startButton = document.getElementById('start-button');
         const introContainer = document.getElementById('intro-video-container');
         const introVideo = document.getElementById('intro-video');
         const canvasContainer = document.getElementById('canvas-container');
@@ -65,13 +163,15 @@
         const backgroundMusic = document.getElementById('background-music');
 
         // --- Estado ---
-        let introFinished = false; // Flag para saber si la intro ya terminó
+        let experienceStarted = false;
+        let introFinished = false;
+        let audioStarted = false;
         let isPlayerActive = false;
         let controls;
         let currentlyPlayingPlanet = null;
         let hoveredPlanet = null;
 
-        // --- Constantes (sin cambios) ---
+        // --- Constantes ---
         const CAMERA_VIEW_POSITION = new THREE.Vector3(0, 2, 78);
         const PLANET_ALIGNMENT_Y = -4;
         const PLANET_ALIGNMENT_Z = 65;
@@ -81,45 +181,88 @@
         const CAMERA_LOOKAT_TARGET_PLAYER = new THREE.Vector3(0, PLANET_ALIGNMENT_Y * 0.7, 0);
         const CAMERA_LOOKAT_TARGET_INITIAL = new THREE.Vector3(0, 0, 0);
 
-        // --- Función para la transición VISUAL (ya no inicia audio)---
+        // --- Función para la transición VISUAL post-intro ---
         function startMainExperience() {
-            if (introFinished) return; // Prevenir ejecuciones múltiples
-            introFinished = true; // Marcar que la intro terminó
+            if (introFinished) return;
+            introFinished = true;
 
-            introVideo.pause(); // Asegurarse de que el video esté pausado
+            introVideo.pause();
             gsap.to(introContainer, {
                 opacity: 0,
                 duration: 1,
                 onComplete: () => {
-                    introContainer.style.display = 'none'; // Ocultarlo completamente
+                    introContainer.style.display = 'none';
+                    introContainer.style.pointerEvents = 'none';
                 }
             });
-            // Mostrar el canvas y la UI
-            canvasContainer.style.opacity = 0;
-            uiElement.style.opacity = 0;
-            canvasContainer.style.pointerEvents = 'auto';
-            gsap.to([canvasContainer, uiElement], { opacity: 1, duration: 1.5, delay: 0.1 }); // Pequeño delay opcional
+
+            // Usar GSAP para asegurar que pointerEvents se active correctamente
+            gsap.set([canvasContainer, uiElement], { opacity: 0, pointerEvents: 'none', visibility: 'hidden' });
+
+            gsap.to([canvasContainer, uiElement], {
+                opacity: 1,
+                duration: 1.5,
+                delay: 0.1,
+                ease: "power1.in",
+                onStart: () => {
+                    canvasContainer.style.visibility = 'visible';
+                    uiElement.style.visibility = 'visible';
+                },
+                onComplete: () => {
+                    canvasContainer.style.pointerEvents = 'auto';
+                    uiElement.style.pointerEvents = 'auto'; // Habilitar eventos en UI (incluye links)
+                    console.log("Canvas y UI visibles e interactivos.");
+                }
+            });
+
             bodyElement.classList.add('app-active');
             if (controls) {
                 controls.enabled = true;
                 controls.autoRotate = true;
             }
-            // Importante: Remover el listener para evitar que se dispare de nuevo
-            introVideo.removeEventListener('ended', handleIntroEnd);
+            if (introVideo.removeEventListener) {
+                introVideo.removeEventListener('ended', handleIntroEnd);
+            }
         }
 
         // --- Función que se ejecuta cuando el video de intro TERMINA ---
         function handleIntroEnd() {
             console.log("Intro video ended.");
-            // 1. Intentar iniciar la música de fondo
-            backgroundMusic.play().catch(error => {
-                console.error("Error al intentar reproducir audio después de la intro:", error);
-                // Podrías añadir un mensaje visual aquí si quieres informar al usuario
-                // que necesita hacer clic si el audio no empieza.
-            });
-            // 2. Iniciar la transición visual
             startMainExperience();
         }
+
+         // --- Función que se ejecuta al hacer clic en el botón "Inicia Aquí" ---
+        function handleStartClick() {
+            if (experienceStarted) return;
+            experienceStarted = true;
+
+            console.log("Start button clicked.");
+
+            // 1. Ocultar el CONTENEDOR del botón
+            startButtonContainer.classList.add('hidden');
+
+            // 2. Mostrar el contenedor del video de intro (fade in)
+            introContainer.classList.add('visible');
+
+            // 3. Iniciar la reproducción del VIDEO de intro
+            introVideo.play().then(() => {
+                console.log("Intro video playing.");
+                introVideo.addEventListener('ended', handleIntroEnd);
+            }).catch(error => {
+                console.error("Error al reproducir video de intro:", error);
+                startMainExperience(); // Fallback
+            });
+
+            // 4. Iniciar la reproducción del AUDIO de fondo
+            backgroundMusic.play().then(() => {
+                audioStarted = true;
+                console.log("Background audio playing.");
+            }).catch(error => {
+                audioStarted = false;
+                console.error("Error al reproducir audio de fondo:", error);
+            });
+        }
+
 
         // --- INICIALIZACIÓN THREE.JS (sin cambios) ---
         const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000); const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" }); renderer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); renderer.outputEncoding = THREE.sRGBEncoding; canvasContainer.appendChild(renderer.domElement); const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, camera)); const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.0, 0.4, 0.85); composer.addPass(bloomPass); controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = 0.05; controls.screenSpacePanning = false; controls.minDistance = 10; controls.maxDistance = 150; controls.autoRotate = false; controls.enabled = false; const ambientLight = new THREE.AmbientLight(0x404040, 2); scene.add(ambientLight); const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5); directionalLight.position.set(5, 10, 7); scene.add(directionalLight); const particlesGeometry = new THREE.BufferGeometry(); const particlesCount = 7000; const posArray = new Float32Array(particlesCount * 3); for(let i = 0; i < particlesCount * 3; i++) posArray[(i)] = (Math.random() - 0.5) * 300; particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3)); const particlesMaterial = new THREE.PointsMaterial({ size: 0.1, color: 0x00ffff, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending }); const particlesSystem = new THREE.Points(particlesGeometry, particlesMaterial); scene.add(particlesSystem); const textureLoader = new THREE.TextureLoader();
@@ -134,11 +277,12 @@
         const planets = [];
         songs.forEach(song => { /* ... Creación de planetas ... */ const texture = textureLoader.load(song.texturePath); texture.encoding = THREE.sRGBEncoding; const geometry = new THREE.SphereGeometry(song.size, 64, 64); const material = new THREE.MeshStandardMaterial({ map: texture, emissive: song.color, emissiveIntensity: 0.6, metalness: 0.1, roughness: 0.8, side: THREE.FrontSide }); material.userData = { originalEmissiveIntensity: material.emissiveIntensity }; const planet = new THREE.Mesh(geometry, material); planet.position.copy(song.initialPosition); song.originalPosition = song.initialPosition.clone(); planet.userData = song; const atmosphereGeometry = new THREE.SphereGeometry(song.size * 1.15, 64, 64); const atmosphereMaterial = new THREE.MeshPhongMaterial({ color: song.atmosphereColor, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, side: THREE.BackSide }); const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial); planet.add(atmosphere); if(song.ring) { const ringGeometry = new THREE.RingGeometry(song.size * 1.5, song.size * 1.8, 64); const ringMaterial = new THREE.MeshBasicMaterial({ color: song.color, side: THREE.DoubleSide, transparent: true, opacity: 0.6 }); const ring = new THREE.Mesh(ringGeometry, ringMaterial); ring.rotation.x = Math.PI * 0.45; ring.rotation.y = Math.PI * 0.1; planet.add(ring); } scene.add(planet); planets.push(planet); });
 
-        // ========== INTERACCIÓN (Hover, Click, Cerrar Video - sin cambios funcionales clave) ==========
+        // ========== INTERACCIÓN (Hover, Click, Cerrar Video - Sin cambios mayores) ==========
         const raycaster = new THREE.Raycaster(); const mouse = new THREE.Vector2(-10, -10);
         function setPlanetHighlight(planet, highlighted = true) { if (!planet || !planet.material) return; const originalIntensity = planet.material.userData?.originalEmissiveIntensity ?? 0.6; const targetIntensity = highlighted ? originalIntensity * 2.5 : originalIntensity; gsap.to(planet.material, { emissiveIntensity: targetIntensity, duration: 0.4 }); }
         function onMouseMove(event) {
-             if (!introFinished) return; mouse.x = (event.clientX / window.innerWidth) * 2 - 1; mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+             if (!introFinished) return;
+             mouse.x = (event.clientX / window.innerWidth) * 2 - 1; mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
              if (isPlayerActive) { if (hoveredPlanet) { hoveredPlanet = null; } return; }
              raycaster.setFromCamera(mouse, camera); const intersects = raycaster.intersectObjects(planets); const target = (intersects.length > 0) ? intersects[(0)].object : null;
              if (target) {
@@ -151,11 +295,12 @@
                  if (hoveredPlanet) { songTitleElement.style.opacity = 0; gsap.to(hoveredPlanet.scale, { x: 1, y: 1, z: 1, duration: 0.3 }); hoveredPlanet = null; bloomPass.strength = 1.0; }
              }
         }
-        function onClick() {
-             // Ya no necesitamos tryPlayAudio aquí, la música debe haber empezado o fallado al final de la intro
-             if (!introFinished) return;
-             raycaster.setFromCamera(mouse, camera); const intersects = raycaster.intersectObjects(planets);
-             if (intersects.length > 0) {
+        function onClick(event) {
+            if (!introFinished || !experienceStarted) return;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(planets);
+            if (intersects.length > 0) {
                  const clickedPlanet = intersects[(0)].object;
                  if (!isPlayerActive) {
                      isPlayerActive = true; controls.enabled = false; controls.autoRotate = false;
@@ -172,20 +317,24 @@
                      });
                      tl.add(() => {
                          setPlanetHighlight(currentlyPlayingPlanet, true); ytPlayer.src = `https://www.youtube.com/embed/${clickedPlanet.userData.ytId}?autoplay=1&rel=0&showinfo=0&modestbranding=1`; videoContainer.style.display = 'block';
-                         gsap.to(videoContainer, { opacity: 1, duration: 0.5, onStart: () => { if (!backgroundMusic.paused) backgroundMusic.pause(); } }); // Pausar música si está sonando
+                         gsap.to(videoContainer, { opacity: 1, duration: 0.5, onStart: () => { if (audioStarted && !backgroundMusic.paused) backgroundMusic.pause(); } });
                      }, "-=0.5");
                  } else {
                      if (clickedPlanet === currentlyPlayingPlanet) return;
                      setPlanetHighlight(currentlyPlayingPlanet, false); setPlanetHighlight(clickedPlanet, true); currentlyPlayingPlanet = clickedPlanet; songTitleElement.textContent = currentlyPlayingPlanet.userData.title; songTitleElement.style.opacity = 1;
                      if(hoveredPlanet && hoveredPlanet !== clickedPlanet) { hoveredPlanet = null; }
-                     gsap.to(ytPlayer, {opacity: 0, duration: 0.3, onComplete: () => { ytPlayer.src = `https://www.youtube.com/embed/${clickedPlanet.userData.ytId}?autoplay=1&rel=0&showinfo=0&modestbranding=1`; gsap.to(ytPlayer, {opacity: 1, duration: 0.3, delay: 0.1}); if (!backgroundMusic.paused) backgroundMusic.pause(); }}); // Pausar música si está sonando
+                     gsap.to(ytPlayer, {opacity: 0, duration: 0.3, onComplete: () => { ytPlayer.src = `https://www.youtube.com/embed/${clickedPlanet.userData.ytId}?autoplay=1&rel=0&showinfo=0&modestbranding=1`; gsap.to(ytPlayer, {opacity: 1, duration: 0.3, delay: 0.1}); if (audioStarted && !backgroundMusic.paused) backgroundMusic.pause(); }});
                  }
-             }
+            }
         }
         closeVideoBtn.addEventListener('click', () => {
              if (!isPlayerActive) return; isPlayerActive = false;
              setPlanetHighlight(currentlyPlayingPlanet, false); currentlyPlayingPlanet = null; songTitleElement.style.opacity = 0;
-             gsap.to(videoContainer, { opacity: 0, duration: 0.5, onComplete: () => { videoContainer.style.display = 'none'; ytPlayer.src = ''; backgroundMusic.play().catch(e => console.error("Error al reanudar audio:", e)); }}); // Reanudar música
+             gsap.to(videoContainer, { opacity: 0, duration: 0.5, onComplete: () => { videoContainer.style.display = 'none'; ytPlayer.src = '';
+                if (audioStarted) {
+                    backgroundMusic.play().catch(e => console.error("Error al reanudar audio:", e));
+                }
+             }});
              const tl = gsap.timeline({ defaults: { duration: 1.2, ease: "power3.inOut" } });
              planets.forEach(planet => { tl.to(planet.position, { x: planet.userData.originalPosition.x, y: planet.userData.originalPosition.y, z: planet.userData.originalPosition.z }, "start"); tl.to(planet.scale, { x: 1, y: 1, z: 1 }, "start"); });
              tl.to(camera.position, { x: 0, y: 0, z: INITIAL_CAMERA_Z, onUpdate: () => camera.lookAt(CAMERA_LOOKAT_TARGET_INITIAL) }, "start+=0.1");
@@ -193,20 +342,47 @@
              tl.add(() => { controls.enabled = true; controls.autoRotate = true; bloomPass.strength = 1.0; });
         });
 
+
         // ========== ANIMACIÓN ==========
-        function animate() { requestAnimationFrame(animate); if (introFinished) { if (!isPlayerActive) { const delta = 0.003; planets.forEach(planet => { if (planet !== currentlyPlayingPlanet && planet !== hoveredPlanet) { planet.rotation.y += delta; } }); } particlesSystem.rotation.y += 0.0001; controls.update(); try { composer.render(); } catch (e) { console.error("Error during render:", e); } } }
+         function animate() {
+             requestAnimationFrame(animate);
+             if (introFinished && experienceStarted) { // Asegurar que la experiencia inició
+                 if (!isPlayerActive) {
+                     const delta = 0.003;
+                     planets.forEach(planet => {
+                         if (planet !== currentlyPlayingPlanet && planet !== hoveredPlanet) {
+                             planet.rotation.y += delta;
+                         }
+                     });
+                 }
+                 particlesSystem.rotation.y += 0.0001;
+                 if(controls && controls.enabled) controls.update();
+                 try {
+                     composer.render();
+                 } catch (e) {
+                     console.error("Error during render:", e);
+                 }
+             }
+         }
         camera.position.set(0, 0, INITIAL_CAMERA_Z); camera.lookAt(CAMERA_LOOKAT_TARGET_INITIAL); animate();
 
         // ========== RESIZE HANDLER ==========
-        window.addEventListener('resize', () => { if (!introFinished) return; camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); composer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); });
+        window.addEventListener('resize', () => {
+             if (!introFinished) return;
+             camera.aspect = window.innerWidth / window.innerHeight;
+             camera.updateProjectionMatrix();
+             renderer.setSize(window.innerWidth, window.innerHeight);
+             composer.setSize(window.innerWidth, window.innerHeight);
+             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        });
 
         // --- INICIO ---
-        // Añadir el listener para cuando el video de intro termine
-        introVideo.addEventListener('ended', handleIntroEnd);
+        // Añadir el listener al botón de inicio
+        startButton.addEventListener('click', handleStartClick);
 
-        // Añadir listeners generales de mouse/click
+        // Añadir listeners generales (pero sus funciones tienen checks internos)
         window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('click', onClick); // onClick ya no intenta iniciar el audio, solo interactúa con planetas
+        window.addEventListener('click', onClick);
 
     </script>
 </body>
