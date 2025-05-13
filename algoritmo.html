@@ -1,211 +1,213 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ALGO-RITMO | ANONYBLUES</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap">
-<style>
-/* --- Estilos (sin cambios respecto a la versión anterior) --- */
-body { margin: 0; overflow: hidden; font-family: 'Orbitron', sans-serif; background: #000; cursor: default; }
-#intro-video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; background-color: #000; transition: opacity 1s ease-out; display: flex; justify-content: center; align-items: center; }
-#intro-video { width: 100%; height: 100%; object-fit: cover; }
-#canvas-container, #ui { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-out; }
-#canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-#ui { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); color: #0FF; text-align: center; text-shadow: 0 0 10px #0FF; z-index: 100; width: 90%; max-width: 800px; pointer-events: none; }
-#ui .social-links a { pointer-events: auto; }
-.main-title { margin-bottom: 5px; font-size: 1.2rem; }
-.song-title { font-size: 1.5rem; margin-bottom: 10px; opacity: 0; transition: opacity 0.5s; height: 1.8em; }
-.social-links { margin-top: 5px; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; }
-.social-links a { color: #FF00FF; text-decoration: none; font-size: 0.8rem; transition: opacity 0.3s, text-shadow 0.3s; text-shadow: 0 0 8px #FF00FF; }
-.social-links a:hover { opacity: 0.8; text-shadow: 0 0 15px #FF00FF; }
-#video-container { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 70vw; height: 39.375vw; max-width: 900px; max-height: 506px; z-index: 200; display: none; border: 3px solid #0FF; box-shadow: 0 0 30px #0FF; background: black; opacity: 0; transition: opacity 0.5s ease-out; }
-#close-video { position: absolute; top: -20px; right: -20px; background: #FF00FF; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 201; line-height: 40px; text-align: center; }
-body.app-active { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="%23FF00FF" stroke-width="3"/></svg>'), auto; }
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-<script type="importmap">
-{ "imports": {
-"three": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.module.js",
-"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.175.0/examples/jsm/"
-} }
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALGO-RITMO | ANONYBLUES</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap">
+    <style>
+        /* --- Estilos (sin cambios) --- */
+        body { margin: 0; overflow: hidden; font-family: 'Orbitron', sans-serif; background: #000; cursor: default; }
+        #intro-video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; background-color: #000; transition: opacity 1s ease-out; display: flex; justify-content: center; align-items: center; }
+        #intro-video { width: 100%; height: 100%; object-fit: cover; }
+        #canvas-container, #ui { opacity: 0; pointer-events: none; transition: opacity 1.5s ease-out; }
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        #ui { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); color: #0FF; text-align: center; text-shadow: 0 0 10px #0FF; z-index: 100; width: 90%; max-width: 800px; pointer-events: none; }
+        #ui .social-links a { pointer-events: auto; }
+        .main-title { margin-bottom: 5px; font-size: 1.2rem; }
+        .song-title { font-size: 1.5rem; margin-bottom: 10px; opacity: 0; transition: opacity 0.5s; height: 1.8em; }
+        .social-links { margin-top: 5px; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .social-links a { color: #FF00FF; text-decoration: none; font-size: 0.8rem; transition: opacity 0.3s, text-shadow 0.3s; text-shadow: 0 0 8px #FF00FF; }
+        .social-links a:hover { opacity: 0.8; text-shadow: 0 0 15px #FF00FF; }
+        #video-container { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 70vw; height: 39.375vw; max-width: 900px; max-height: 506px; z-index: 200; display: none; border: 3px solid #0FF; box-shadow: 0 0 30px #0FF; background: black; opacity: 0; transition: opacity 0.5s ease-out; }
+        #close-video { position: absolute; top: -20px; right: -20px; background: #FF00FF; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 201; line-height: 40px; text-align: center; }
+        body.app-active { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" fill="none" stroke="%23FF00FF" stroke-width="3"/></svg>'), auto; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script type="importmap">
+    { "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.175.0/examples/jsm/"
+    } }
+    </script>
 </head>
 <body>
-<!-- Audio de fondo (sin muted) -->
-<audio id="background-music" loop>
-<source src="./assets/sounds/sonido.mp3" type="audio/mp3">
-Tu navegador no soporta la reproducción de audio.
-</audio>
+    <!-- Audio de fondo (quitamos autoplay) -->
+    <audio id="background-music" loop>
+        <source src="./assets/sounds/sonido.mp3" type="audio/mp3">
+        Tu navegador no soporta la reproducción de audio.
+    </audio>
 
-      
-<!-- Intro Video (muted para asegurar autoplay del video) -->
-<div id="intro-video-container"><video id="intro-video" src="./assets/videos/fondo.mp4" autoplay playsinline muted></video></div>
-<!-- Contenido Principal -->
-<div id="canvas-container"></div>
-<div id="ui"><div class="song-title" id="song-title"></div><div class="main-title">ALGO-RITMO | ANONYBLUES</div><div class="social-links"><a href="INSTAGRAM_URL" target="_blank" rel="noopener noreferrer">Instagram</a> <a href="YOUTUBE_URL" target="_blank" rel="noopener noreferrer">YouTube</a> <a href="FACEBOOK_URL" target="_blank" rel="noopener noreferrer">Facebook</a> <a href="PATREON_URL" target="_blank" rel="noopener noreferrer">Patreon</a></div></div>
-<div id="video-container"><iframe id="yt-player" width="100%" height="100%" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><button id="close-video">×</button></div>
+    <!-- Intro Video (con autoplay muted) -->
+    <div id="intro-video-container"><video id="intro-video" src="./assets/videos/fondo.mp4" autoplay playsinline muted></video></div>
+    <!-- Contenido Principal -->
+    <div id="canvas-container"></div>
+    <div id="ui"><div class="song-title" id="song-title"></div><div class="main-title">ALGO-RITMO | ANONYBLUES</div><div class="social-links"><a href="INSTAGRAM_URL" target="_blank" rel="noopener noreferrer">Instagram</a> <a href="YOUTUBE_URL" target="_blank" rel="noopener noreferrer">YouTube</a> <a href="FACEBOOK_URL" target="_blank" rel="noopener noreferrer">Facebook</a> <a href="PATREON_URL" target="_blank" rel="noopener noreferrer">Patreon</a></div></div>
+    <div id="video-container"><iframe id="yt-player" width="100%" height="100%" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><button id="close-video">×</button></div>
 
-<script type="module">
-    import * as THREE from 'three';
-    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    <script type="module">
+        import * as THREE from 'three';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    // --- Elementos DOM ---
-    const introContainer = document.getElementById('intro-video-container'); const introVideo = document.getElementById('intro-video');
-    const canvasContainer = document.getElementById('canvas-container'); const uiElement = document.getElementById('ui'); const videoContainer = document.getElementById('video-container'); const ytPlayer = document.getElementById('yt-player'); const closeVideoBtn = document.getElementById('close-video'); const songTitleElement = document.getElementById('song-title'); const bodyElement = document.body;
-    const backgroundMusic = document.getElementById('background-music');
+        // --- Elementos DOM ---
+        const introContainer = document.getElementById('intro-video-container');
+        const introVideo = document.getElementById('intro-video');
+        const canvasContainer = document.getElementById('canvas-container');
+        const uiElement = document.getElementById('ui');
+        const videoContainer = document.getElementById('video-container');
+        const ytPlayer = document.getElementById('yt-player');
+        const closeVideoBtn = document.getElementById('close-video');
+        const songTitleElement = document.getElementById('song-title');
+        const bodyElement = document.body;
+        const backgroundMusic = document.getElementById('background-music');
 
-    // --- Estado ---
-    let introFinished = false; let isPlayerActive = false; let controls; let currentlyPlayingPlanet = null; let hoveredPlanet = null;
-    let audioPlayedOnce = false; // Flag para controlar la reproducción inicial
+        // --- Estado ---
+        let introFinished = false; // Flag para saber si la intro ya terminó
+        let isPlayerActive = false;
+        let controls;
+        let currentlyPlayingPlanet = null;
+        let hoveredPlanet = null;
 
-    // --- Constantes ---
-    const INTRO_DURATION_MS = 5000; // <<< AJUSTA ESTO a la duración de tu video de intro
-    const CAMERA_VIEW_POSITION = new THREE.Vector3(0, 2, 78);
-    const PLANET_ALIGNMENT_Y = -4;
-    const PLANET_ALIGNMENT_Z = 65;
-    const PLANET_SPACING = 2;
-    const ALIGNED_PLANET_SCALE = 0.05;
-    const INITIAL_CAMERA_Z = 100;
-    const CAMERA_LOOKAT_TARGET_PLAYER = new THREE.Vector3(0, PLANET_ALIGNMENT_Y * 0.7, 0);
-    const CAMERA_LOOKAT_TARGET_INITIAL = new THREE.Vector3(0, 0, 0);
+        // --- Constantes (sin cambios) ---
+        const CAMERA_VIEW_POSITION = new THREE.Vector3(0, 2, 78);
+        const PLANET_ALIGNMENT_Y = -4;
+        const PLANET_ALIGNMENT_Z = 65;
+        const PLANET_SPACING = 2;
+        const ALIGNED_PLANET_SCALE = 0.05;
+        const INITIAL_CAMERA_Z = 100;
+        const CAMERA_LOOKAT_TARGET_PLAYER = new THREE.Vector3(0, PLANET_ALIGNMENT_Y * 0.7, 0);
+        const CAMERA_LOOKAT_TARGET_INITIAL = new THREE.Vector3(0, 0, 0);
 
-    // --- Función para intentar reproducir audio ---
-    function tryPlayAudio() {
-        if (backgroundMusic.paused && !audioPlayedOnce) {
-            backgroundMusic.play().then(() => {
-                audioPlayedOnce = true; // Marcamos que ya sonó (o al menos se intentó exitosamente)
-                console.log("Audio iniciado correctamente.");
-            }).catch(error => {
-                // No hacemos nada aquí, esperamos la interacción si falla
-                console.log("Autoplay de audio bloqueado por el navegador, esperando interacción.");
+        // --- Función para la transición VISUAL (ya no inicia audio)---
+        function startMainExperience() {
+            if (introFinished) return; // Prevenir ejecuciones múltiples
+            introFinished = true; // Marcar que la intro terminó
+
+            introVideo.pause(); // Asegurarse de que el video esté pausado
+            gsap.to(introContainer, {
+                opacity: 0,
+                duration: 1,
+                onComplete: () => {
+                    introContainer.style.display = 'none'; // Ocultarlo completamente
+                }
             });
-        }
-    }
-
-    // --- Función para iniciar la experiencia principal (transición visual) ---
-    function startMainExperience() {
-        if (introFinished) return;
-        introFinished = true;
-        introVideo.pause();
-        gsap.to(introContainer, {
-            opacity: 0,
-            duration: 1,
-            onComplete: () => {
-                introContainer.style.display = 'none';
+            // Mostrar el canvas y la UI
+            canvasContainer.style.opacity = 0;
+            uiElement.style.opacity = 0;
+            canvasContainer.style.pointerEvents = 'auto';
+            gsap.to([canvasContainer, uiElement], { opacity: 1, duration: 1.5, delay: 0.1 }); // Pequeño delay opcional
+            bodyElement.classList.add('app-active');
+            if (controls) {
+                controls.enabled = true;
+                controls.autoRotate = true;
             }
-        });
-        canvasContainer.style.opacity = 0;
-        uiElement.style.opacity = 0;
-        canvasContainer.style.pointerEvents = 'auto';
-        gsap.to([canvasContainer, uiElement], { opacity: 1, duration: 1.5, delay: 0.5 });
-        bodyElement.classList.add('app-active');
-        if (controls) {
-            controls.enabled = true;
-            controls.autoRotate = true;
+            // Importante: Remover el listener para evitar que se dispare de nuevo
+            introVideo.removeEventListener('ended', handleIntroEnd);
         }
-    }
 
-    // --- INICIALIZACIÓN THREE.JS (sin cambios) ---
-    const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000); const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" }); renderer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); renderer.outputEncoding = THREE.sRGBEncoding; canvasContainer.appendChild(renderer.domElement); const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, camera)); const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.0, 0.4, 0.85); composer.addPass(bloomPass); controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = 0.05; controls.screenSpacePanning = false; controls.minDistance = 10; controls.maxDistance = 150; controls.autoRotate = false; controls.enabled = false; const ambientLight = new THREE.AmbientLight(0x404040, 2); scene.add(ambientLight); const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5); directionalLight.position.set(5, 10, 7); scene.add(directionalLight); const particlesGeometry = new THREE.BufferGeometry(); const particlesCount = 7000; const posArray = new Float32Array(particlesCount * 3); for(let i = 0; i < particlesCount * 3; i++) posArray[(i)] = (Math.random() - 0.5) * 300; particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3)); const particlesMaterial = new THREE.PointsMaterial({ size: 0.1, color: 0x00ffff, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending }); const particlesSystem = new THREE.Points(particlesGeometry, particlesMaterial); scene.add(particlesSystem); const textureLoader = new THREE.TextureLoader();
-    const songs = [ /* ... Tu array de canciones ... */
-         { title: "LA NAVE NODRIZA", ytId: "7LQLXalnl_0", texturePath: './assets/textures/nave-nodriza.jpg', color: 0x00ffff, size: 8, initialPosition: new THREE.Vector3(-30, 10, -50), atmosphereColor: 0x0066ff, ring: true },
-         { title: "LA PANTALLA DE CRISTAL", ytId: "oA_2wYnBmxo", texturePath: './assets/textures/pantalla-cristal.jpg', color: 0xff00ff, size: 7, initialPosition: new THREE.Vector3(25, 10, -40), atmosphereColor: 0xff00aa, ring: false },
-         { title: "LA MANZANA QUE TE PUDRE", ytId: "VIDEO_ID_3", texturePath: './assets/textures/manzana-podrida.jpg', color: 0xff3300, size: 6, initialPosition: new THREE.Vector3(0, -15, -60), atmosphereColor: 0xff6600, ring: true },
-         { title: "NOSTRADAMUS DIGITAL", ytId: "VIDEO_ID_4", texturePath: './assets/textures/nostradamus-digital.jpg', color: 0xffff00, size: 7.5, initialPosition: new THREE.Vector3(40, -5, -70), atmosphereColor: 0xffee00, ring: false },
-         { title: "FUNKYFANS", ytId: "VIDEO_ID_5", texturePath: './assets/textures/funkyfans.jpg', color: 0x9900ff, size: 6.5, initialPosition: new THREE.Vector3(-20, 20, -30), atmosphereColor: 0xcc00ff, ring: true },
-         { title: "EL BLUES DEL AMOR ARTIFICIAL", ytId: "VIDEO_ID_6", texturePath: './assets/textures/blues-amor-artificial.jpg', color: 0x00ff99, size: 7, initialPosition: new THREE.Vector3(10, -25, -45), atmosphereColor: 0x00cc99, ring: false }
-    ];
-    const planets = [];
-    songs.forEach(song => { /* ... Creación de planetas ... */ const texture = textureLoader.load(song.texturePath); texture.encoding = THREE.sRGBEncoding; const geometry = new THREE.SphereGeometry(song.size, 64, 64); const material = new THREE.MeshStandardMaterial({ map: texture, emissive: song.color, emissiveIntensity: 0.6, metalness: 0.1, roughness: 0.8, side: THREE.FrontSide }); material.userData = { originalEmissiveIntensity: material.emissiveIntensity }; const planet = new THREE.Mesh(geometry, material); planet.position.copy(song.initialPosition); song.originalPosition = song.initialPosition.clone(); planet.userData = song; const atmosphereGeometry = new THREE.SphereGeometry(song.size * 1.15, 64, 64); const atmosphereMaterial = new THREE.MeshPhongMaterial({ color: song.atmosphereColor, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, side: THREE.BackSide }); const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial); planet.add(atmosphere); if(song.ring) { const ringGeometry = new THREE.RingGeometry(song.size * 1.5, song.size * 1.8, 64); const ringMaterial = new THREE.MeshBasicMaterial({ color: song.color, side: THREE.DoubleSide, transparent: true, opacity: 0.6 }); const ring = new THREE.Mesh(ringGeometry, ringMaterial); ring.rotation.x = Math.PI * 0.45; ring.rotation.y = Math.PI * 0.1; planet.add(ring); } scene.add(planet); planets.push(planet); });
+        // --- Función que se ejecuta cuando el video de intro TERMINA ---
+        function handleIntroEnd() {
+            console.log("Intro video ended.");
+            // 1. Intentar iniciar la música de fondo
+            backgroundMusic.play().catch(error => {
+                console.error("Error al intentar reproducir audio después de la intro:", error);
+                // Podrías añadir un mensaje visual aquí si quieres informar al usuario
+                // que necesita hacer clic si el audio no empieza.
+            });
+            // 2. Iniciar la transición visual
+            startMainExperience();
+        }
 
-    // ========== INTERACCIÓN (Hover, Click, Cerrar Video - sin cambios funcionales clave) ==========
-    const raycaster = new THREE.Raycaster(); const mouse = new THREE.Vector2(-10, -10);
-    function setPlanetHighlight(planet, highlighted = true) { if (!planet || !planet.material) return; const originalIntensity = planet.material.userData?.originalEmissiveIntensity ?? 0.6; const targetIntensity = highlighted ? originalIntensity * 2.5 : originalIntensity; gsap.to(planet.material, { emissiveIntensity: targetIntensity, duration: 0.4 }); }
-    function onMouseMove(event) {
-         if (!introFinished) return; mouse.x = (event.clientX / window.innerWidth) * 2 - 1; mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-         if (isPlayerActive) { if (hoveredPlanet) { hoveredPlanet = null; } return; }
-         raycaster.setFromCamera(mouse, camera); const intersects = raycaster.intersectObjects(planets); const target = (intersects.length > 0) ? intersects[(0)].object : null;
-         if (target) {
-             if (hoveredPlanet !== target) {
-                 if (hoveredPlanet) { gsap.to(hoveredPlanet.scale, { x: 1, y: 1, z: 1, duration: 0.3 }); songTitleElement.style.opacity = 0; }
-                 hoveredPlanet = target; songTitleElement.textContent = hoveredPlanet.userData.title; songTitleElement.style.opacity = 1;
-                 gsap.to(hoveredPlanet.scale, { x: 1.15, y: 1.15, z: 1.15, duration: 0.3 }); bloomPass.strength = 1.6;
-             }
-         } else {
-             if (hoveredPlanet) { songTitleElement.style.opacity = 0; gsap.to(hoveredPlanet.scale, { x: 1, y: 1, z: 1, duration: 0.3 }); hoveredPlanet = null; bloomPass.strength = 1.0; }
-         }
-    }
-    function onClick() {
-         if (!introFinished) return; tryPlayAudio(); // Intentar reproducir en el primer click si falló antes
-         raycaster.setFromCamera(mouse, camera); const intersects = raycaster.intersectObjects(planets);
-         if (intersects.length > 0) {
-             const clickedPlanet = intersects[(0)].object;
-             if (!isPlayerActive) {
-                 isPlayerActive = true; controls.enabled = false; controls.autoRotate = false;
-                 if (hoveredPlanet) { gsap.to(hoveredPlanet.scale, { x: 1, y: 1, z: 1, duration: 0.1 }); hoveredPlanet = null; }
-                 setPlanetHighlight(currentlyPlayingPlanet, false); currentlyPlayingPlanet = clickedPlanet; songTitleElement.textContent = currentlyPlayingPlanet.userData.title; songTitleElement.style.opacity = 1;
-                 const totalWidth = (planets.length - 1) * PLANET_SPACING; const startX = -totalWidth / 2; const tl = gsap.timeline({ defaults: { duration: 1.2, ease: "power3.inOut" } });
-                 tl.to(camera.position, { x: CAMERA_VIEW_POSITION.x, y: CAMERA_VIEW_POSITION.y, z: CAMERA_VIEW_POSITION.z, onUpdate: () => camera.lookAt(CAMERA_LOOKAT_TARGET_PLAYER) }, "start");
-                 tl.to(controls.target, { x: CAMERA_LOOKAT_TARGET_PLAYER.x, y: CAMERA_LOOKAT_TARGET_PLAYER.y, z: CAMERA_LOOKAT_TARGET_PLAYER.z }, "start");
-                 planets.forEach((planet, index) => {
-                     const targetX = startX + index * PLANET_SPACING;
-                     tl.to(planet.position, { x: targetX, y: PLANET_ALIGNMENT_Y, z: PLANET_ALIGNMENT_Z }, "start+=0.1");
-                     tl.to(planet.rotation, { y: 0, x:0, z:0 }, "start+=0.1");
-                     tl.to(planet.scale, { x: ALIGNED_PLANET_SCALE, y: ALIGNED_PLANET_SCALE, z: ALIGNED_PLANET_SCALE }, "start+=0.1");
-                 });
-                 tl.add(() => {
-                     setPlanetHighlight(currentlyPlayingPlanet, true); ytPlayer.src = `https://www.youtube.com/embed/${clickedPlanet.userData.ytId}?autoplay=1&rel=0&showinfo=0&modestbranding=1`; videoContainer.style.display = 'block';
-                     gsap.to(videoContainer, { opacity: 1, duration: 0.5, onStart: () => { backgroundMusic.pause(); } });
-                 }, "-=0.5");
+        // --- INICIALIZACIÓN THREE.JS (sin cambios) ---
+        const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000); const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" }); renderer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); renderer.outputEncoding = THREE.sRGBEncoding; canvasContainer.appendChild(renderer.domElement); const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, camera)); const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.0, 0.4, 0.85); composer.addPass(bloomPass); controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = 0.05; controls.screenSpacePanning = false; controls.minDistance = 10; controls.maxDistance = 150; controls.autoRotate = false; controls.enabled = false; const ambientLight = new THREE.AmbientLight(0x404040, 2); scene.add(ambientLight); const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5); directionalLight.position.set(5, 10, 7); scene.add(directionalLight); const particlesGeometry = new THREE.BufferGeometry(); const particlesCount = 7000; const posArray = new Float32Array(particlesCount * 3); for(let i = 0; i < particlesCount * 3; i++) posArray[(i)] = (Math.random() - 0.5) * 300; particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3)); const particlesMaterial = new THREE.PointsMaterial({ size: 0.1, color: 0x00ffff, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending }); const particlesSystem = new THREE.Points(particlesGeometry, particlesMaterial); scene.add(particlesSystem); const textureLoader = new THREE.TextureLoader();
+        const songs = [ /* ... Tu array de canciones ... */
+             { title: "LA NAVE NODRIZA", ytId: "7LQLXalnl_0", texturePath: './assets/textures/nave-nodriza.jpg', color: 0x00ffff, size: 8, initialPosition: new THREE.Vector3(-30, 10, -50), atmosphereColor: 0x0066ff, ring: true },
+             { title: "LA PANTALLA DE CRISTAL", ytId: "oA_2wYnBmxo", texturePath: './assets/textures/pantalla-cristal.jpg', color: 0xff00ff, size: 7, initialPosition: new THREE.Vector3(25, 10, -40), atmosphereColor: 0xff00aa, ring: false },
+             { title: "LA MANZANA QUE TE PUDRE", ytId: "VIDEO_ID_3", texturePath: './assets/textures/manzana-podrida.jpg', color: 0xff3300, size: 6, initialPosition: new THREE.Vector3(0, -15, -60), atmosphereColor: 0xff6600, ring: true },
+             { title: "NOSTRADAMUS DIGITAL", ytId: "VIDEO_ID_4", texturePath: './assets/textures/nostradamus-digital.jpg', color: 0xffff00, size: 7.5, initialPosition: new THREE.Vector3(40, -5, -70), atmosphereColor: 0xffee00, ring: false },
+             { title: "FUNKYFANS", ytId: "VIDEO_ID_5", texturePath: './assets/textures/funkyfans.jpg', color: 0x9900ff, size: 6.5, initialPosition: new THREE.Vector3(-20, 20, -30), atmosphereColor: 0xcc00ff, ring: true },
+             { title: "EL BLUES DEL AMOR ARTIFICIAL", ytId: "VIDEO_ID_6", texturePath: './assets/textures/blues-amor-artificial.jpg', color: 0x00ff99, size: 7, initialPosition: new THREE.Vector3(10, -25, -45), atmosphereColor: 0x00cc99, ring: false }
+        ];
+        const planets = [];
+        songs.forEach(song => { /* ... Creación de planetas ... */ const texture = textureLoader.load(song.texturePath); texture.encoding = THREE.sRGBEncoding; const geometry = new THREE.SphereGeometry(song.size, 64, 64); const material = new THREE.MeshStandardMaterial({ map: texture, emissive: song.color, emissiveIntensity: 0.6, metalness: 0.1, roughness: 0.8, side: THREE.FrontSide }); material.userData = { originalEmissiveIntensity: material.emissiveIntensity }; const planet = new THREE.Mesh(geometry, material); planet.position.copy(song.initialPosition); song.originalPosition = song.initialPosition.clone(); planet.userData = song; const atmosphereGeometry = new THREE.SphereGeometry(song.size * 1.15, 64, 64); const atmosphereMaterial = new THREE.MeshPhongMaterial({ color: song.atmosphereColor, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, side: THREE.BackSide }); const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial); planet.add(atmosphere); if(song.ring) { const ringGeometry = new THREE.RingGeometry(song.size * 1.5, song.size * 1.8, 64); const ringMaterial = new THREE.MeshBasicMaterial({ color: song.color, side: THREE.DoubleSide, transparent: true, opacity: 0.6 }); const ring = new THREE.Mesh(ringGeometry, ringMaterial); ring.rotation.x = Math.PI * 0.45; ring.rotation.y = Math.PI * 0.1; planet.add(ring); } scene.add(planet); planets.push(planet); });
+
+        // ========== INTERACCIÓN (Hover, Click, Cerrar Video - sin cambios funcionales clave) ==========
+        const raycaster = new THREE.Raycaster(); const mouse = new THREE.Vector2(-10, -10);
+        function setPlanetHighlight(planet, highlighted = true) { if (!planet || !planet.material) return; const originalIntensity = planet.material.userData?.originalEmissiveIntensity ?? 0.6; const targetIntensity = highlighted ? originalIntensity * 2.5 : originalIntensity; gsap.to(planet.material, { emissiveIntensity: targetIntensity, duration: 0.4 }); }
+        function onMouseMove(event) {
+             if (!introFinished) return; mouse.x = (event.clientX / window.innerWidth) * 2 - 1; mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+             if (isPlayerActive) { if (hoveredPlanet) { hoveredPlanet = null; } return; }
+             raycaster.setFromCamera(mouse, camera); const intersects = raycaster.intersectObjects(planets); const target = (intersects.length > 0) ? intersects[(0)].object : null;
+             if (target) {
+                 if (hoveredPlanet !== target) {
+                     if (hoveredPlanet) { gsap.to(hoveredPlanet.scale, { x: 1, y: 1, z: 1, duration: 0.3 }); songTitleElement.style.opacity = 0; }
+                     hoveredPlanet = target; songTitleElement.textContent = hoveredPlanet.userData.title; songTitleElement.style.opacity = 1;
+                     gsap.to(hoveredPlanet.scale, { x: 1.15, y: 1.15, z: 1.15, duration: 0.3 }); bloomPass.strength = 1.6;
+                 }
              } else {
-                 if (clickedPlanet === currentlyPlayingPlanet) return;
-                 setPlanetHighlight(currentlyPlayingPlanet, false); setPlanetHighlight(clickedPlanet, true); currentlyPlayingPlanet = clickedPlanet; songTitleElement.textContent = currentlyPlayingPlanet.userData.title; songTitleElement.style.opacity = 1;
-                 if(hoveredPlanet && hoveredPlanet !== clickedPlanet) { hoveredPlanet = null; }
-                 gsap.to(ytPlayer, {opacity: 0, duration: 0.3, onComplete: () => { ytPlayer.src = `https://www.youtube.com/embed/${clickedPlanet.userData.ytId}?autoplay=1&rel=0&showinfo=0&modestbranding=1`; gsap.to(ytPlayer, {opacity: 1, duration: 0.3, delay: 0.1}); backgroundMusic.pause(); }});
+                 if (hoveredPlanet) { songTitleElement.style.opacity = 0; gsap.to(hoveredPlanet.scale, { x: 1, y: 1, z: 1, duration: 0.3 }); hoveredPlanet = null; bloomPass.strength = 1.0; }
              }
-         }
-    }
-    closeVideoBtn.addEventListener('click', () => {
-         if (!isPlayerActive) return; isPlayerActive = false;
-         setPlanetHighlight(currentlyPlayingPlanet, false); currentlyPlayingPlanet = null; songTitleElement.style.opacity = 0;
-         gsap.to(videoContainer, { opacity: 0, duration: 0.5, onComplete: () => { videoContainer.style.display = 'none'; ytPlayer.src = ''; backgroundMusic.play(); }});
-         const tl = gsap.timeline({ defaults: { duration: 1.2, ease: "power3.inOut" } });
-         planets.forEach(planet => { tl.to(planet.position, { x: planet.userData.originalPosition.x, y: planet.userData.originalPosition.y, z: planet.userData.originalPosition.z }, "start"); tl.to(planet.scale, { x: 1, y: 1, z: 1 }, "start"); });
-         tl.to(camera.position, { x: 0, y: 0, z: INITIAL_CAMERA_Z, onUpdate: () => camera.lookAt(CAMERA_LOOKAT_TARGET_INITIAL) }, "start+=0.1");
-         tl.to(controls.target, { x: CAMERA_LOOKAT_TARGET_INITIAL.x, y: CAMERA_LOOKAT_TARGET_INITIAL.y, z: CAMERA_LOOKAT_TARGET_INITIAL.z }, "start+=0.1");
-         tl.add(() => { controls.enabled = true; controls.autoRotate = true; bloomPass.strength = 1.0; });
-    });
+        }
+        function onClick() {
+             // Ya no necesitamos tryPlayAudio aquí, la música debe haber empezado o fallado al final de la intro
+             if (!introFinished) return;
+             raycaster.setFromCamera(mouse, camera); const intersects = raycaster.intersectObjects(planets);
+             if (intersects.length > 0) {
+                 const clickedPlanet = intersects[(0)].object;
+                 if (!isPlayerActive) {
+                     isPlayerActive = true; controls.enabled = false; controls.autoRotate = false;
+                     if (hoveredPlanet) { gsap.to(hoveredPlanet.scale, { x: 1, y: 1, z: 1, duration: 0.1 }); hoveredPlanet = null; }
+                     setPlanetHighlight(currentlyPlayingPlanet, false); currentlyPlayingPlanet = clickedPlanet; songTitleElement.textContent = currentlyPlayingPlanet.userData.title; songTitleElement.style.opacity = 1;
+                     const totalWidth = (planets.length - 1) * PLANET_SPACING; const startX = -totalWidth / 2; const tl = gsap.timeline({ defaults: { duration: 1.2, ease: "power3.inOut" } });
+                     tl.to(camera.position, { x: CAMERA_VIEW_POSITION.x, y: CAMERA_VIEW_POSITION.y, z: CAMERA_VIEW_POSITION.z, onUpdate: () => camera.lookAt(CAMERA_LOOKAT_TARGET_PLAYER) }, "start");
+                     tl.to(controls.target, { x: CAMERA_LOOKAT_TARGET_PLAYER.x, y: CAMERA_LOOKAT_TARGET_PLAYER.y, z: CAMERA_LOOKAT_TARGET_PLAYER.z }, "start");
+                     planets.forEach((planet, index) => {
+                         const targetX = startX + index * PLANET_SPACING;
+                         tl.to(planet.position, { x: targetX, y: PLANET_ALIGNMENT_Y, z: PLANET_ALIGNMENT_Z }, "start+=0.1");
+                         tl.to(planet.rotation, { y: 0, x:0, z:0 }, "start+=0.1");
+                         tl.to(planet.scale, { x: ALIGNED_PLANET_SCALE, y: ALIGNED_PLANET_SCALE, z: ALIGNED_PLANET_SCALE }, "start+=0.1");
+                     });
+                     tl.add(() => {
+                         setPlanetHighlight(currentlyPlayingPlanet, true); ytPlayer.src = `https://www.youtube.com/embed/${clickedPlanet.userData.ytId}?autoplay=1&rel=0&showinfo=0&modestbranding=1`; videoContainer.style.display = 'block';
+                         gsap.to(videoContainer, { opacity: 1, duration: 0.5, onStart: () => { if (!backgroundMusic.paused) backgroundMusic.pause(); } }); // Pausar música si está sonando
+                     }, "-=0.5");
+                 } else {
+                     if (clickedPlanet === currentlyPlayingPlanet) return;
+                     setPlanetHighlight(currentlyPlayingPlanet, false); setPlanetHighlight(clickedPlanet, true); currentlyPlayingPlanet = clickedPlanet; songTitleElement.textContent = currentlyPlayingPlanet.userData.title; songTitleElement.style.opacity = 1;
+                     if(hoveredPlanet && hoveredPlanet !== clickedPlanet) { hoveredPlanet = null; }
+                     gsap.to(ytPlayer, {opacity: 0, duration: 0.3, onComplete: () => { ytPlayer.src = `https://www.youtube.com/embed/${clickedPlanet.userData.ytId}?autoplay=1&rel=0&showinfo=0&modestbranding=1`; gsap.to(ytPlayer, {opacity: 1, duration: 0.3, delay: 0.1}); if (!backgroundMusic.paused) backgroundMusic.pause(); }}); // Pausar música si está sonando
+                 }
+             }
+        }
+        closeVideoBtn.addEventListener('click', () => {
+             if (!isPlayerActive) return; isPlayerActive = false;
+             setPlanetHighlight(currentlyPlayingPlanet, false); currentlyPlayingPlanet = null; songTitleElement.style.opacity = 0;
+             gsap.to(videoContainer, { opacity: 0, duration: 0.5, onComplete: () => { videoContainer.style.display = 'none'; ytPlayer.src = ''; backgroundMusic.play().catch(e => console.error("Error al reanudar audio:", e)); }}); // Reanudar música
+             const tl = gsap.timeline({ defaults: { duration: 1.2, ease: "power3.inOut" } });
+             planets.forEach(planet => { tl.to(planet.position, { x: planet.userData.originalPosition.x, y: planet.userData.originalPosition.y, z: planet.userData.originalPosition.z }, "start"); tl.to(planet.scale, { x: 1, y: 1, z: 1 }, "start"); });
+             tl.to(camera.position, { x: 0, y: 0, z: INITIAL_CAMERA_Z, onUpdate: () => camera.lookAt(CAMERA_LOOKAT_TARGET_INITIAL) }, "start+=0.1");
+             tl.to(controls.target, { x: CAMERA_LOOKAT_TARGET_INITIAL.x, y: CAMERA_LOOKAT_TARGET_INITIAL.y, z: CAMERA_LOOKAT_TARGET_INITIAL.z }, "start+=0.1");
+             tl.add(() => { controls.enabled = true; controls.autoRotate = true; bloomPass.strength = 1.0; });
+        });
 
-    // ========== ANIMACIÓN ==========
-    function animate() { requestAnimationFrame(animate); if (introFinished) { if (!isPlayerActive) { const delta = 0.003; planets.forEach(planet => { if (planet !== currentlyPlayingPlanet && planet !== hoveredPlanet) { planet.rotation.y += delta; } }); } particlesSystem.rotation.y += 0.0001; controls.update(); try { composer.render(); } catch (e) { console.error("Error during render:", e); } } }
-    camera.position.set(0, 0, INITIAL_CAMERA_Z); camera.lookAt(CAMERA_LOOKAT_TARGET_INITIAL); animate();
+        // ========== ANIMACIÓN ==========
+        function animate() { requestAnimationFrame(animate); if (introFinished) { if (!isPlayerActive) { const delta = 0.003; planets.forEach(planet => { if (planet !== currentlyPlayingPlanet && planet !== hoveredPlanet) { planet.rotation.y += delta; } }); } particlesSystem.rotation.y += 0.0001; controls.update(); try { composer.render(); } catch (e) { console.error("Error during render:", e); } } }
+        camera.position.set(0, 0, INITIAL_CAMERA_Z); camera.lookAt(CAMERA_LOOKAT_TARGET_INITIAL); animate();
 
-    // ========== RESIZE HANDLER ==========
-    window.addEventListener('resize', () => { if (!introFinished) return; camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); composer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); });
+        // ========== RESIZE HANDLER ==========
+        window.addEventListener('resize', () => { if (!introFinished) return; camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); composer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); });
 
-    // --- INICIO AUTOMÁTICO Y MANEJO DE AUTOPLAY DE AUDIO ---
+        // --- INICIO ---
+        // Añadir el listener para cuando el video de intro termine
+        introVideo.addEventListener('ended', handleIntroEnd);
 
-    // 1. Intentar reproducir el audio al cargar
-    tryPlayAudio();
+        // Añadir listeners generales de mouse/click
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('click', onClick); // onClick ya no intenta iniciar el audio, solo interactúa con planetas
 
-    // 2. Listener para la PRIMERA interacción del usuario (click o toque) en CUALQUIER LUGAR
-    //    Esto sirve como fallback si el autoplay inicial fue bloqueado.
-    document.body.addEventListener('pointerdown', tryPlayAudio, { once: true });
-
-    // 3. Establecer el temporizador para la transición VISUAL de la intro
-    setTimeout(startMainExperience, INTRO_DURATION_MS);
-
-    // 4. Añadir listeners de interacción para Three.js DESPUÉS de la intro
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('click', onClick); // onClick también llama a tryPlayAudio por si acaso
-
-</script>
-   
- 
-
- </body>
+    </script>
+</body>
 </html>
